@@ -22,16 +22,18 @@ contract Locker {
     }
 
     // init
-    constructor(uint _delay) {
+    constructor(uint _delay)  {
         admin = msg.sender;
         delay = _delay;
     }
+    receive() external payable{}
+
+
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "caller not admin!");
         _;
     }
-
 
     function publish(uint amount) public payable returns (bool)   {
         AddressInfo storage info = balanceOf[msg.sender];
@@ -57,7 +59,7 @@ contract Locker {
     function withdraw(uint amount) public payable returns (bool)  {
         AddressInfo storage info = balanceOf[msg.sender];
 
-        require(info.startTime + delay >= getBlockTimeStamp(), "The time has not yet come!");
+        require(getBlockTimeStamp() >= info.startTime + delay, "The time has not yet come!");
 
         require(info.amount >= amount, "withdraw too much");
 
